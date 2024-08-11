@@ -1,0 +1,19 @@
+# Python 관련
+*.pyc
+__pycache__/
+
+# 환경설정 파일
+.env
+
+# 데이터베이스 파일
+*.db
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints
+
+# VSCode 설정 파일
+.vscode/
+
+# 기타 시스템 파일
+.DS_Store
+Thumbs.db

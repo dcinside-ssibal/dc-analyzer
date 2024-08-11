@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디씨인사이드 갤러리 순위</title>
+</head>
+
+<body>
+    <h1>디씨인사이드 갤러리 순위</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>순위</th>
+                <th>갤러리 이름</th>
+                <th>총 점수</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gallery in gallery_scores %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><a href="/{{ gallery.gallery_id }}">{{ gallery.gallery_id }}</a></td>
+                <td>{{ gallery.total_score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>
