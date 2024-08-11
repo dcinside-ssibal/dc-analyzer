@@ -9,6 +9,8 @@ __pycache__/
 *.db
 
 # 가상 환경 디렉토리
+dc-analyzer/
+.dc-analyzer/
 venv/
 .venv/
 
