@@ -17,7 +17,7 @@ def create_db():
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS galleries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             name TEXT,
             url TEXT
         )
@@ -25,7 +25,7 @@ def create_db():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            gallery_id INTEGER,
+            gallery_id TEXT,
             title TEXT,
             link TEXT,
             writer TEXT,
@@ -40,18 +40,36 @@ def create_db():
     conn.close()
 
 def get_posts(gallery_id, gallery_url):
-    response = requests.get(gallery_url)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    response = requests.get(gallery_url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
     
     posts = []
     for post in soup.select('.ub-content'):
-        title = post.select_one('.gall_tit > a').text
-        link = post.select_one('.gall_tit > a')['href']
-        writer = post.select_one('.gall_writer').text.strip()
-        date = post.select_one('.gall_date').text.strip()
-        views = int(post.select_one('.gall_count').text.strip())
-        comments = int(post.select_one('.gall_reply_num').text.strip().strip('[]'))
-        recommendations = 0  # Assuming recommendations data is not available in this example
+        # 게시물이 설문 또는 공지가 아닌 경우만 처리
+        if '설문' in post.select_one('.gall_num').text or '공지' in post.select_one('.gall_num').text:
+            continue
+        
+        title_tag = post.select_one('.gall_tit > a')
+        if not title_tag:
+            continue
+        title = title_tag.text.strip()
+        link = "https://gall.dcinside.com" + title_tag['href']
+        writer_tag = post.select_one('.gall_writer')
+        writer = writer_tag.text.strip() if writer_tag else 'Unknown'
+        date_tag = post.select_one('.gall_date')
+        date = date_tag.text.strip() if date_tag else 'Unknown'
+        views_tag = post.select_one('.gall_count')
+        views = int(views_tag.text.strip()) if views_tag else 0
+        comments_tag = post.select_one('.reply_numbox')
+        if comments_tag:
+            comments_text = comments_tag.text.strip().strip('[]')
+            comments = int(comments_text.split('/')[0])  # 첫 번째 숫자만 사용
+        else:
+            comments = 0
+        recommendations_tag = post.select_one('.gall_recommend')
+        recommendations = int(recommendations_tag.text.strip()) if recommendations_tag else 0
         
         posts.append((gallery_id, title, link, writer, date, views, comments, recommendations))
     
@@ -70,8 +88,8 @@ def save_posts(posts):
 def data_collector():
     create_db()
     galleries = [
-        {"id": 1, "name": "Baseball", "url": "https://gall.dcinside.com/board/lists/?id=baseball"},
-        {"id": 2, "name": "Soccer", "url": "https://gall.dcinside.com/board/lists/?id=soccer"}
+        {"id": "comic_new4", "name": "Comic", "url": "https://gall.dcinside.com/board/lists?id=comic_new4"},
+        {"id": "baseball_new11", "name": "Baseball", "url": "https://gall.dcinside.com/board/lists?id=baseball_new11"}
         # Add more galleries as needed
     ]
     
@@ -115,9 +133,9 @@ def index():
     df_posts, df_galleries = load_data()
     gallery_scores = calculate_scores(df_posts)
     
-    return render_template('index.html', gallery_scores=gallery_scores.to_dict(orient='records'))
+    return render_template('index.html', gallery_scores=gallery_scores.reset_index().to_dict(orient='records'))
 
-@app.route('/<int:gallery_id>')
+@app.route('/<gallery_id>')
 def gallery(gallery_id):
     df_posts, df_galleries = load_data()
     gallery_name = df_galleries[df_galleries['id'] == gallery_id]['name'].values[0]

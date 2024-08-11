@@ -1,32 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>디씨인사이드 갤러리 순위</title>
+    <title>dc-analyzer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .search-bar button {
+            width: 40px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tabs div {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+
+        .tabs div:hover {
+            background-color: #f1f1f1;
+        }
+
+        .tabs .active {
+            background-color: #fff;
+            border-bottom: none;
+            font-weight: bold;
+        }
+
+        .ranking {
+            border: 1px solid #ddd;
+        }
+
+        .ranking div {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ranking div:last-child {
+            border-bottom: none;
+        }
+
+        .ranking div a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .ranking div a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>디씨인사이드 갤러리 순위</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>순위</th>
-                <th>갤러리 이름</th>
-                <th>총 점수</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="container">
+        <h1>dc-analyzer</h1>
+        <div class="search-bar">
+            <input type="text" placeholder="검색어를 입력해 주세요">
+            <button>
+                <img src="/static/search-icon.png" alt="Search Icon" width="24" height="24">
+            </button>
+        </div>
+        <div class="tabs">
+            <div class="active">전체</div>
+            <div>정식</div>
+            <div>마이너</div>
+            <div>미니</div>
+        </div>
+        <div class="ranking">
             {% for gallery in gallery_scores %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td><a href="/{{ gallery.gallery_id }}">{{ gallery.gallery_id }}</a></td>
-                <td>{{ gallery.total_score }}</td>
-            </tr>
+            <div>
+                {{ loop.index }}. <a href="/{{ gallery.gallery_id }}">{{ gallery.gallery_id }}</a>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    </div>
 </body>
 
 </html>
