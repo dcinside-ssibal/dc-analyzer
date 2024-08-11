@@ -8,6 +8,10 @@ __pycache__/
 # 데이터베이스 파일
 *.db
 
+# 가상 환경 디렉토리
+venv/
+.venv/
+
 # Jupyter Notebook Checkpoints
 .ipynb_checkpoints
 
